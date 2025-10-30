@@ -1,0 +1,9 @@
+# Ignore Visual Studio Code workspace and settings
+.vscode/
+
+# Ignore build artifacts
+/build/
+
+# Ignore temporary files
+*.swp
+*.tmp
