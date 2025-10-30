@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400" viewBox="0 0 800 400">
+  <style>
+    .sphere { fill: #f5f7fb; stroke: #ccd6e6; }
+    .great { stroke: #2b7bda; stroke-width: 2; fill: none; }
+    .arc { stroke: #e67e22; stroke-width: 3; fill: none; }
+    .point { fill: #c0392b; }
+    .label { font-family: Arial, sans-serif; font-size: 13px; fill: #333; }
+  </style>
+
+  <!-- Left: unit circle cross-section showing great circle -->
+  <g transform="translate(200,200)">
+    <circle r="140" class="sphere" />
+    <!-- Great circle (equator) -->
+    <path d="M -140 0 A 140 140 0 0 0 140 0" class="great" />
+
+    <!-- Points a and b on the great circle -->
+    <circle cx="90" cy="70" r="6" class="point" />
+    <text x="100" y="70" class="label">b (quat)</text>
+
+    <circle cx="-80" cy="30" r="6" class="point" />
+    <text x="-140" y="20" class="label">a (quat)</text>
+
+    <!-- Great-circle arc (SLERP path) -->
+    <path d="M -80 30 A 140 140 0 0 0 90 70" class="arc" />
+
+    <!-- Interpolated point t=0.5 -->
+    <circle cx="20" cy="45" r="5" fill="#27ae60" />
+    <text x="30" y="45" class="label">interpolated (t=0.5)</text>
+
+    <text x="-60" y="-140" class="label">SLERP follows great-circle (constant angular speed)</text>
+  </g>
+
+  <!-- Right: compare with LERP straight line in 4D projected to 2D -->
+  <g transform="translate(520,200)">
+    <rect x="-220" y="-140" width="440" height="280" rx="6" fill="#fff" stroke="#ddd" />
+    <text x="-200" y="-110" class="label">LERP (component-wise) projected</text>
+
+    <!-- line between a and b (straight interpolation) -->
+    <line x1="-120" y1="60" x2="120" y2="-40" stroke="#95a5a6" stroke-width="2" />
+    <circle cx="120" cy="-40" r="6" class="point" />
+    <text x="130" y="-40" class="label">b</text>
+    <circle cx="-120" cy="60" r="6" class="point" />
+    <text x="-200" y="60" class="label">a</text>
+
+    <!-- LERP midpoint (not on unit sphere) -->
+    <circle cx="0" cy="10" r="5" fill="#f39c12" />
+    <text x="10" y="10" class="label">LERP midpoint (then normalize)</text>
+
+    <text x="-120" y="120" class="label">LERP followed by normalize is OK but not constant angular speed</text>
+  </g>
+
+</svg>

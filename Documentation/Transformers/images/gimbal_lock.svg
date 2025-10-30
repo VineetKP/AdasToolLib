@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="350" viewBox="0 0 800 350">
+  <style>
+    .ring { fill: none; stroke: #7f8c8d; stroke-width: 2; }
+    .axis { stroke: #2c3e50; stroke-width: 2; }
+    .label { font-family: Arial, sans-serif; font-size: 13px; fill: #333; }
+    .highlight { stroke: #c0392b; stroke-width: 3; }
+  </style>
+
+  <text x="20" y="20" class="label">Gimbal lock visualization (3 nested gimbals): when two rotation axes align</text>
+
+  <!-- Draw three rings representing roll, pitch, yaw gimbals -->
+  <g transform="translate(200,180)">
+    <!-- Yaw (outer ring) -->
+    <ellipse rx="120" ry="60" class="ring" />
+    <text x="-10" y="-80" class="label">Yaw gimbal</text>
+
+    <!-- Pitch (middle) -->
+    <g transform="rotate(-30)">
+      <ellipse rx="90" ry="45" class="ring" />
+      <text x="-10" y="-50" class="label">Pitch gimbal</text>
+    </g>
+
+    <!-- Roll (inner) -->
+    <g transform="rotate(20)">
+      <ellipse rx="60" ry="30" class="ring" />
+      <text x="-10" y="-20" class="label">Roll gimbal</text>
+    </g>
+
+    <!-- Axis pointers -->
+    <line x1="0" y1="0" x2="120" y2="0" class="axis" />
+    <text x="125" y="0" class="label">X-axis</text>
+    <line x1="0" y1="0" x2="0" y2="-80" class="axis" />
+    <text x="5" y="-85" class="label">Z-axis</text>
+
+  </g>
+
+  <!-- Show gimbal-lock condition: pitch = 90deg -->
+  <g transform="translate(520,180)">
+    <text x="-130" y="-90" class="label">Pitch = +90° (gimbal lock)</text>
+    <!-- Outer yaw ring collapsed such that two axes align -->
+    <ellipse rx="120" ry="0" class="highlight" />
+    <ellipse rx="90" ry="0" class="highlight" />
+    <ellipse rx="60" ry="0" class="highlight" />
+
+    <line x1="0" y1="-60" x2="0" y2="60" class="axis highlight" />
+    <text x="5" y="65" class="label">Two axes now align → loss of one DOF</text>
+  </g>
+
+</svg>

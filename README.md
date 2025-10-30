@@ -26,137 +26,117 @@ helpers. It includes examples and a minimal test runner.
 This project uses CMake. From the project root:
 
 ```bash
-cmake -S . -B build -DBUILD_EXAMPLES=ON -DBUILD_TESTS=ON
-cmake --build build -j
-```
+ # AdasToolLib
 
-## Example binaries
-- `adas_tools_app` — simple app that prints a short message (examples/main_app.cpp)
-- `example_usage` — demo comparing matrix-based vs quaternion-based transforms
+A small, dependency-minimal C++ library of ADAS helper routines: 3D transforms,
+quaternion utilities, and sensor-frame helpers. The core math modules avoid the
+STL and are designed to be embedded in embedded/RTOS projects.
 
-Run the examples:
+This repository contains a production-ready library plus examples and tests.
+
+## Quick start — build and run (Linux / macOS)
+
+Configure, build, and run examples and tests (out-of-tree build):
 
 ```bash
+cmake -S . -B build -DBUILD_EXAMPLES=ON -DBUILD_TESTS=ON
+cmake --build build -j
+
+# Run example apps
 ./build/adas_tools_app
 ./build/example_usage
+
+# Run tests
+./build/tests
 ```
 
-## Tests
-Build and run the minimal test runner:
+If you only want examples and not tests, set `-DBUILD_TESTS=OFF` when configuring.
+
+## Project layout
+- `include/` — public headers (POD types and function declarations)
+- `src/` — implementation sources
+- `examples/` — small example programs demonstrating usage
+- `tests/` — unit tests and micro-benchmarks
+- `Documentation/` — extended guides and visualizations
+- `build/` — out-of-tree CMake build directory (ignored by `.gitignore`)
+
+## Important functions (short reference)
+These are the core helpers provided by the library and useful entry points.
+
+Transformers (coordinate frame helpers)
+- `AdasTools::Position` — POD { x,y,z }
+- `AdasTools::Frame3D` — POD { x,y,z, roll, pitch, yaw }
+- `AdasTools::scalePosition(const Position &p, double s)` — uniform scale
+- `AdasTools::rotatePosition(const Position &p, double roll, double pitch, double yaw)` — rotate about origin using R = Rz * Ry * Rx
+- `AdasTools::translatePosition(const Position &p, double dx, double dy, double dz)` — translate
+- `AdasTools::localToGlobal(const Position &localPos, const Frame3D &frame)` — rotate then translate
+- `AdasTools::globalToLocal(const Position &globalPos, const Frame3D &frame)` — invert transform (translate then apply R^T)
+
+Quaternion utilities
+- `AdasTools::Quaternion` — POD { w,x,y,z }
+- `AdasTools::quaternionFromRPY(double roll, double pitch, double yaw)` — construct quaternion
+- `AdasTools::normalizeQuaternion(const Quaternion &q)` — normalize to unit length
+- `AdasTools::rotateByQuaternion(const Quaternion &q, const Position &p)` — rotate vector
+- `AdasTools::multiplyQuaternion(const Quaternion &a, const Quaternion &b)` — compose rotations
+- `AdasTools::slerp(const Quaternion &a, const Quaternion &b, double t)` — spherical linear interpolation (LERP fallback when angle is small)
+
+Examples (useful targets)
+- `adas_tools_app` — tiny app that prints a short message (`examples/main_app.cpp`)
+- `example_usage` — demonstrates matrix vs quaternion rotation (`examples/example_usage.cpp`)
+- `sensor_offsets`, `sensor_chain`, `quaternion_walk` — additional demos
+
+## Documentation
+Detailed mathematical explanations, derivations, and visualizations are
+kept in `Documentation/Transformers/README.md` (includes SLERP, gimbal-lock,
+code samples and SVG visuals). This keeps the root README concise.
+
+## Contributing & tests
+- Tests are simple self-contained executables in `tests/`.
+- Add new public headers to `include/` and implementations to `src/`.
+- When adding API, include Doxygen-style comments and a short example.
+
+## License
+See `LICENSE` (if present) or add your preferred license file.
+
+## Examples — Quick run
+Run these one-liners after building (see Quick start above). They are
+designed for quick verification and to show expected short outputs.
+
+- Build and run a tiny app
+
+```bash
+cmake -S . -B build -DBUILD_EXAMPLES=ON -DBUILD_TESTS=OFF
+cmake --build build --target adas_tools_app -j
+./build/adas_tools_app
+# Expected: "My Own Library"
+```
+
+- Run the matrix vs quaternion example
+
+```bash
+cmake -S . -B build -DBUILD_EXAMPLES=ON -DBUILD_TESTS=OFF
+cmake --build build --target example_usage -j
+./build/example_usage
+# Expected snippet (numeric values may vary slightly):
+# p_global (matrix) = (2.35355, 1.16066, 0.7)
+# p_global (quat)   = (2.35355, 1.16066, 0.7)
+# round-trip equals local: (1, 0.5, 0.2)
+```
+
+- Run the tests (all tests)
 
 ```bash
 cmake -S . -B build -DBUILD_TESTS=ON
 cmake --build build --target tests -j
 ./build/tests
+# Expected: "All tests passed"
 ```
 
-The test runner prints `All tests passed` on success.
+If you want a full rebuild of everything, use:
 
-## Transformer module — mathematical overview
-
-The Transformers module implements 3D coordinate frame math used across ADAS
-sensors (camera, radar, lidar, ultrasonic). The library provides plain-old-data
-types `AdasTools::Position` and `AdasTools::Frame3D` and functions to scale,
-rotate, translate and convert coordinates between local and global frames.
-
-Notation
-- Position p = $(x, y, z)^T$
-- Frame origin: $o = (x_0, y_0, z_0)^T$
-- Orientation: roll $(\phi)$, pitch $(\theta)$, yaw $(\psi)$ in radians
-
-Rotation matrices
-We use the intrinsic rotation sequence $R = R_z(\psi) R_y(\theta) R_x(\phi)$ where
-
-$$
-R_x(\phi)=\begin{bmatrix}
-1 & 0 & 0 \\
-0 & \cos\phi & -\sin\phi \\
-0 & \sin\phi & \cos\phi
-\end{bmatrix},
-\quad
-R_y(\theta)=\begin{bmatrix}
-\cos\theta & 0 & \sin\theta \\
-0 & 1 & 0 \\
--\sin\theta & 0 & \cos\theta
-\end{bmatrix},
-\quad
-R_z(\psi)=\begin{bmatrix}
-\cos\psi & -\sin\psi & 0 \\
-\sin\psi & \cos\psi & 0 \\
-0 & 0 & 1
-\end{bmatrix}.
-$$
-
-The combined rotation $R = R_z(\psi) R_y(\theta) R_x(\phi)$ maps a local
-vector to the global frame by
-
-$$
-v_{global} = R \, v_{local}
-$$
-
-Frame transforms
-- Local to Global: $v_{global} = R \, v_{local} + o$
-- Global to Local: $v_{local} = R^T (v_{global} - o)$ (since $R^{-1}=R^T$)
-
-Functions (short)
-- `scalePosition(p, s)` — uniform scaling by `s`
-- `rotatePosition(p, roll, pitch, yaw)` — rotate the position about origin
-- `translatePosition(p, dx, dy, dz)` — translate by (dx,dy,dz)
-- `localToGlobal(localPos, frame)` — rotate then translate
-- `globalToLocal(globalPos, frame)` — translate then apply inverse rotation
-
-C++ example (matrix-based round-trip)
-
-```cpp
-#include "helpers.hpp"
-#include "transformers.hpp"
-using namespace AdasTools;
-
-int main() {
-  Position p_local = {1.0, 0.5, 0.2};
-  Frame3D frame = {2.0, 0.1, 0.5, 0.0, 0.0, 0.785398};
-  Position p_global = localToGlobal(p_local, frame);
-  Position p_back = globalToLocal(p_global, frame);
-  // p_back ~= p_local
-}
+```bash
+cmake -S . -B build -DBUILD_EXAMPLES=ON -DBUILD_TESTS=ON
+cmake --build build -j
 ```
 
-## Quaternion utilities
-
-Quaternions provide a compact, numerically stable representation for 3D
-rotations and are useful for composition and smooth interpolation (slerp).
-
-Representation
-- $q = w + x i + y j + z k$ where $w$ is scalar and $(x,y,z)$ is the vector part.
-  Unit quaternions ($\lVert q \rVert = 1$) represent rotations.
-
-Conversion from roll-pitch-yaw $(\phi,\theta,\psi)$ to quaternion:
-
-$$
-q = \begin{bmatrix} w \\ x \\ y \\ z \end{bmatrix} =
-\begin{bmatrix}
-\cos(\tfrac{\phi}{2})\cos(\tfrac{\theta}{2})\cos(\tfrac{\psi}{2}) + \sin(\tfrac{\phi}{2})\sin(\tfrac{\theta}{2})\sin(\tfrac{\psi}{2})\\
-\sin(\tfrac{\phi}{2})\cos(\tfrac{\theta}{2})\cos(\tfrac{\psi}{2}) - \cos(\tfrac{\phi}{2})\sin(\tfrac{\theta}{2})\sin(\tfrac{\psi}{2})\\
-\cos(\tfrac{\phi}{2})\sin(\tfrac{\theta}{2})\cos(\tfrac{\psi}{2}) + \sin(\tfrac{\phi}{2})\cos(\tfrac{\theta}{2})\sin(\tfrac{\psi}{2})\\
-\cos(\tfrac{\phi}{2})\cos(\tfrac{\theta}{2})\sin(\tfrac{\psi}{2}) - \sin(\tfrac{\phi}{2})\sin(\tfrac{\theta}{2})\cos(\tfrac{\psi}{2})
-\end{bmatrix}
-$$
-
-API (short)
-- `quaternionFromRPY(roll,pitch,yaw)` — create quaternion from RPY
-- `normalizeQuaternion(q)` — normalize to unit quaternion
-- `rotateByQuaternion(q,p)` — apply quaternion rotation to a `Position`
-- `multiplyQuaternion(q1,q2)` — compose rotations
-- `slerp(a,b,t)` — spherical linear interpolation between two quaternions
-
-Example: compare matrix vs quaternion rotation (see `examples/example_usage.cpp`)
-
-## Next steps and notes
-- Consider adding quaternion slerp tests and edge-case checks for near-identical
-  quaternions (already handled in the implementation with a LERP fallback).
-- If you want richer examples (camera projection, lidar point clouds), I can
-  add them in the `examples/` folder.
-		sensorFrame.z = 0.5;    // 0.5 m above ground
-
-		sensorFrame.roll  = 0.0;
 
