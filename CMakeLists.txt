@@ -52,10 +52,22 @@ if(BUILD_EXAMPLES)
     target_compile_features(visualize_projection PRIVATE cxx_std_20)
     target_compile_options(visualize_projection PRIVATE -Wall -Wextra -Wpedantic)
     target_link_libraries(visualize_projection PRIVATE adas_tools)
+    
+    # Small app projects (copies of focused examples)
+    # Ensure testing is enabled before adding subdirectories so their add_test() calls register
+    if(BUILD_TESTS)
+        enable_testing()
+        include(CTest)
+    endif()
+    add_subdirectory(apps/advanced_app)
+    add_subdirectory(apps/camera_projection)
+    add_subdirectory(apps/quaternion_app)
 endif()
 
 if(BUILD_TESTS)
-    message(STATUS "BUILD_TESTS enabled but no tests are configured in this minimal workspace.")
+    enable_testing()
+    include(CTest)
+    message(STATUS "BUILD_TESTS enabled; tests in subdirectories will be registered if present.")
 endif()
 
 # =====================
