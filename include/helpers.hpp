@@ -13,9 +13,9 @@
 namespace AdasTools {
 
 /**
- * @brief Simple 3D position type (POD) representing coordinates in meters.
+ * @brief Simple 3D point type (POD) representing coordinates in meters.
  */
-struct Position {
+struct Point3 {
     double x; /**< X coordinate in meters */
     double y; /**< Y coordinate in meters */
     double z; /**< Z coordinate in meters */
@@ -36,5 +36,35 @@ struct Frame3D {
     double pitch; /**< rotation about Y axis in radians */
     double yaw;   /**< rotation about Z axis in radians */
 };
+
+/**
+ * @brief 6-DOF pose: position (meters) and orientation (radians)
+ *
+ * This POD is convenient for passing full sensor poses (x,y,z,roll,pitch,yaw).
+ */
+struct Pose {
+    double x;   /**< meters */
+    double y;   /**< meters */
+    double z;   /**< meters */
+    double roll;  /**< radians */
+    double pitch; /**< radians */
+    double yaw;   /**< radians */
+};
+
+/**
+ * @brief Convert a pose's angular components from radians to degrees (returns new Pose).
+ * @param p Input pose with roll/pitch/yaw in radians
+ * @return Pose with same x,y,z and roll/pitch/yaw in degrees
+ */
+inline Pose poseRadiansToDegrees(const Pose &p)
+{
+    const double RAD2DEG = 180.0 / 3.14159265358979323846;
+    Pose out;
+    out.x = p.x; out.y = p.y; out.z = p.z;
+    out.roll = p.roll * RAD2DEG;
+    out.pitch = p.pitch * RAD2DEG;
+    out.yaw = p.yaw * RAD2DEG;
+    return out;
+}
 
 } // namespace AdasTools

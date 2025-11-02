@@ -61,7 +61,7 @@ Quaternion normalizeQuaternion(const Quaternion &q)
     return out;
 }
 
-Position rotateByQuaternion(const Quaternion &q, const Position &p)
+Point3 rotateByQuaternion(const Quaternion &q, const Point3 &p)
 {
     // Convert quaternion to rotation matrix and apply to p
     double ww = q.w*q.w;
@@ -89,7 +89,7 @@ Position rotateByQuaternion(const Quaternion &q, const Position &p)
     double r21 = 2.0*(yz + wx);
     double r22 = ww - xx - yy + zz;
 
-    Position out;
+    Point3 out;
     out.x = r00 * p.x + r01 * p.y + r02 * p.z;
     out.y = r10 * p.x + r11 * p.y + r12 * p.z;
     out.z = r20 * p.x + r21 * p.y + r22 * p.z;

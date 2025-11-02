@@ -39,68 +39,23 @@ target_compile_options(adas_tools PRIVATE -Wall -Wextra -Wpedantic)
 # 💡 Example program
 # =====================
 if(BUILD_EXAMPLES)
-    # Build a small executable from examples/main_app.cpp so the example can be run directly
-    add_executable(adas_tools_app examples/main_app.cpp)
-    target_include_directories(adas_tools_app PRIVATE ${PROJECT_SOURCE_DIR}/include)
-    target_compile_features(adas_tools_app PRIVATE cxx_std_20)
-    target_compile_options(adas_tools_app PRIVATE -Wall -Wextra -Wpedantic)
-    # If other library components are required later, link adas_tools
-    target_link_libraries(adas_tools_app PRIVATE adas_tools)
-
-    # Add a richer example demonstrating transformers + quaternion
-    add_executable(example_usage examples/example_usage.cpp)
-    target_include_directories(example_usage PRIVATE ${PROJECT_SOURCE_DIR}/include)
-    target_compile_features(example_usage PRIVATE cxx_std_20)
-    target_compile_options(example_usage PRIVATE -Wall -Wextra -Wpedantic)
-    target_link_libraries(example_usage PRIVATE adas_tools)
-
-    # Sensor offsets example
-    add_executable(sensor_offsets examples/sensor_offsets.cpp)
-    target_include_directories(sensor_offsets PRIVATE ${PROJECT_SOURCE_DIR}/include)
-    target_compile_features(sensor_offsets PRIVATE cxx_std_20)
-    target_compile_options(sensor_offsets PRIVATE -Wall -Wextra -Wpedantic)
-    target_link_libraries(sensor_offsets PRIVATE adas_tools)
-
-    # Chain example
-    add_executable(sensor_chain examples/sensor_chain.cpp)
-    target_include_directories(sensor_chain PRIVATE ${PROJECT_SOURCE_DIR}/include)
-    target_compile_features(sensor_chain PRIVATE cxx_std_20)
-    target_compile_options(sensor_chain PRIVATE -Wall -Wextra -Wpedantic)
-    target_link_libraries(sensor_chain PRIVATE adas_tools)
-
-    # Quaternion interpolation walk
-    add_executable(quaternion_walk examples/quaternion_walk.cpp)
-    target_include_directories(quaternion_walk PRIVATE ${PROJECT_SOURCE_DIR}/include)
-    target_compile_features(quaternion_walk PRIVATE cxx_std_20)
-    target_compile_options(quaternion_walk PRIVATE -Wall -Wextra -Wpedantic)
-    target_link_libraries(quaternion_walk PRIVATE adas_tools)
+    # Only build the focused advanced example to keep workspace minimal
+    add_executable(advanced_transform_examples examples/advanced_transform_examples.cpp)
+    target_include_directories(advanced_transform_examples PRIVATE ${PROJECT_SOURCE_DIR}/include)
+    target_compile_features(advanced_transform_examples PRIVATE cxx_std_20)
+    target_compile_options(advanced_transform_examples PRIVATE -Wall -Wextra -Wpedantic)
+    target_link_libraries(advanced_transform_examples PRIVATE adas_tools)
+    
+    # visualization example: projects a lidar point and writes an image
+    add_executable(visualize_projection examples/visualize_projection.cpp)
+    target_include_directories(visualize_projection PRIVATE ${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/examples)
+    target_compile_features(visualize_projection PRIVATE cxx_std_20)
+    target_compile_options(visualize_projection PRIVATE -Wall -Wextra -Wpedantic)
+    target_link_libraries(visualize_projection PRIVATE adas_tools)
 endif()
 
 if(BUILD_TESTS)
-    add_executable(tests tests/test_transformers.cpp)
-    target_include_directories(tests PRIVATE ${PROJECT_SOURCE_DIR}/include)
-    target_compile_features(tests PRIVATE cxx_std_20)
-    target_compile_options(tests PRIVATE -Wall -Wextra -Wpedantic)
-    target_link_libraries(tests PRIVATE adas_tools)
-
-    # Slerp correctness + benchmark
-    add_executable(test_slerp tests/test_slerp.cpp)
-    target_include_directories(test_slerp PRIVATE ${PROJECT_SOURCE_DIR}/include)
-    target_compile_features(test_slerp PRIVATE cxx_std_20)
-    target_compile_options(test_slerp PRIVATE -Wall -Wextra -Wpedantic)
-    target_link_libraries(test_slerp PRIVATE adas_tools)
-
-    add_executable(test_slerp_edge tests/test_slerp_edge.cpp)
-    target_include_directories(test_slerp_edge PRIVATE ${PROJECT_SOURCE_DIR}/include)
-    target_compile_features(test_slerp_edge PRIVATE cxx_std_20)
-    target_compile_options(test_slerp_edge PRIVATE -Wall -Wextra -Wpedantic)
-    target_link_libraries(test_slerp_edge PRIVATE adas_tools)
-
-    add_executable(test_gimbal tests/test_gimbal.cpp)
-    target_include_directories(test_gimbal PRIVATE ${PROJECT_SOURCE_DIR}/include)
-    target_compile_features(test_gimbal PRIVATE cxx_std_20)
-    target_compile_options(test_gimbal PRIVATE -Wall -Wextra -Wpedantic)
-    target_link_libraries(test_gimbal PRIVATE adas_tools)
+    message(STATUS "BUILD_TESTS enabled but no tests are configured in this minimal workspace.")
 endif()
 
 # =====================

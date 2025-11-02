@@ -22,11 +22,11 @@ static bool approxEqual(double a, double b, double eps=1e-6) {
 int main()
 {
     // Test round-trip local->global->local
-    Position p_local = {1.234, -0.5, 0.75};
+    Point3 p_local = {1.234, -0.5, 0.75};
     Frame3D frame = {2.0, 0.1, -0.3, 0.1, -0.2, 0.3};
 
-    Position g = localToGlobal(p_local, frame);
-    Position back = globalToLocal(g, frame);
+    Point3 g = localToGlobal(p_local, frame);
+    Point3 back = globalToLocal(g, frame);
 
     if (!approxEqual(p_local.x, back.x) || !approxEqual(p_local.y, back.y) || !approxEqual(p_local.z, back.z)) {
         std::cerr << "Round-trip transform failed: (" << p_local.x << "," << p_local.y << "," << p_local.z << ") -> (" << back.x << "," << back.y << "," << back.z << ")\n";

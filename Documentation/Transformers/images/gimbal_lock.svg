@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="800" height="350" viewBox="0 0 800 350">
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="350" viewBox="0 0 800 350" role="img" aria-label="Gimbal lock visualization">
   <style>
     .ring { fill: none; stroke: #7f8c8d; stroke-width: 2; }
     .axis { stroke: #2c3e50; stroke-width: 2; }

@@ -41,10 +41,10 @@ Quaternion quaternionFromRPY(double roll, double pitch, double yaw);
  *        Position vector: v_rotated = R(q) * v.
  *
  * @param q Quaternion
- * @param p Input position
- * @return Rotated position
+ * @param p Input point
+ * @return Rotated point
  */
-Position rotateByQuaternion(const Quaternion &q, const Position &p);
+Point3 rotateByQuaternion(const Quaternion &q, const Point3 &p);
 
 /**
  * @brief Multiply two quaternions (q1 * q2)

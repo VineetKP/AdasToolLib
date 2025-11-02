@@ -64,19 +64,19 @@ If you only want examples and not tests, set `-DBUILD_TESTS=OFF` when configurin
 These are the core helpers provided by the library and useful entry points.
 
 Transformers (coordinate frame helpers)
-- `AdasTools::Position` — POD { x,y,z }
+- `AdasTools::Point3` — POD { x,y,z }
 - `AdasTools::Frame3D` — POD { x,y,z, roll, pitch, yaw }
-- `AdasTools::scalePosition(const Position &p, double s)` — uniform scale
-- `AdasTools::rotatePosition(const Position &p, double roll, double pitch, double yaw)` — rotate about origin using R = Rz * Ry * Rx
-- `AdasTools::translatePosition(const Position &p, double dx, double dy, double dz)` — translate
-- `AdasTools::localToGlobal(const Position &localPos, const Frame3D &frame)` — rotate then translate
-- `AdasTools::globalToLocal(const Position &globalPos, const Frame3D &frame)` — invert transform (translate then apply R^T)
+- `AdasTools::scalePosition(const Point3 &p, double s)` — uniform scale
+- `AdasTools::rotatePosition(const Point3 &p, double roll, double pitch, double yaw)` — rotate about origin using R = Rz * Ry * Rx
+- `AdasTools::translatePosition(const Point3 &p, double dx, double dy, double dz)` — translate
+- `AdasTools::localToGlobal(const Point3 &localPos, const Frame3D &frame)` — rotate then translate
+- `AdasTools::globalToLocal(const Point3 &globalPos, const Frame3D &frame)` — invert transform (translate then apply R^T)
 
 Quaternion utilities
 - `AdasTools::Quaternion` — POD { w,x,y,z }
 - `AdasTools::quaternionFromRPY(double roll, double pitch, double yaw)` — construct quaternion
 - `AdasTools::normalizeQuaternion(const Quaternion &q)` — normalize to unit length
-- `AdasTools::rotateByQuaternion(const Quaternion &q, const Position &p)` — rotate vector
+ - `AdasTools::rotateByQuaternion(const Quaternion &q, const Point3 &p)` — rotate vector
 - `AdasTools::multiplyQuaternion(const Quaternion &a, const Quaternion &b)` — compose rotations
 - `AdasTools::slerp(const Quaternion &a, const Quaternion &b, double t)` — spherical linear interpolation (LERP fallback when angle is small)
 
