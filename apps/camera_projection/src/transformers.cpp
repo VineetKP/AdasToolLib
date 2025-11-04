@@ -2,6 +2,7 @@
 #include <math.h>
 namespace AdasTools {
 
+
 void pose6ToMatrix(const double pose6[6], double outMat16[16])
 {
     double x = pose6[0]; double y = pose6[1]; double z = pose6[2];
@@ -31,14 +32,29 @@ Point3 projectPointCamera(const Point3 &pointLocal, const double extrinsic[16], 
     double fy = intrinsic[4]; double cy_i = intrinsic[5];
     double u = (fx * x_cam + s * y_cam) / z_cam + cx_i;
     double v = (fy * y_cam) / z_cam + cy_i;
-    out.x=u; out.y=v; out.z=z_cam; return out;
+    out.x=u; 
+    out.y=v; 
+    out.z=z_cam; 
+    return out;
 }
 
 Pose projectPointCamera(const Pose &pointLocal, const double extrinsic[16], const double intrinsic[9])
 {
     Point3 p{pointLocal.x, pointLocal.y, pointLocal.z};
     Point3 pix = projectPointCamera(p, extrinsic, intrinsic);
-    Pose out; out.x = pix.x; out.y = pix.y; out.z = pix.z; return out;
+    Pose out; 
+    out.x = pix.x; 
+    out.y = pix.y; 
+    out.z = pix.z; 
+    return out;
+}
+
+bool isPointInFrontOfCamera(double z_cam) {
+    return z_cam > 0.0;
+}
+
+bool isPixelInImage(double u, double v, int width, int height) {
+    return u >= 0 && u < width && v >= 0 && v < height;
 }
 
 } // namespace AdasTools
